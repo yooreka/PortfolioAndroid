@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="searchtype_array">
+
+
+
+   <item>--</item>
+   <item>이름</item>
+    </string-array>
+</resources>
