@@ -10,13 +10,8 @@ public class Shop {
 
     @Override
     public String toString() {
-        return "Shop{" +
-                "shopid=" + shopid +
-                ", shopname='" + shopname + '\'' +
-                ", businesshour='" + businesshour + '\'' +
-                ", mobile='" + mobile + '\'' +
-                ", roadaddress='" + roadaddress + '\'' +
-                ", address='" + address + '\'' +
-                '}';
+        return shopname;
     }
 }
+
+

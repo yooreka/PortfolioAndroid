@@ -2,18 +2,29 @@ package com.example.portfolio;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.LayoutAnimationController;
+import android.view.animation.TranslateAnimation;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,10 +38,13 @@ import java.util.List;
 import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity {
+    //스크롤이 가장 아래에서 수행되었는지 확인할 변수
+    boolean lastItemVisibleFlag = false;
     //콤보 박스 역할을 하는 위젯
     private Spinner searchtype;
     private EditText value;
    // private TextView list;
+    private ProgressBar progressind;
 
 
     private Button btnsearch, btnnext;
@@ -56,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         //shopadapter를 이용해서 ListView에 데이터가 수정되었으니 다시 출력하고 신호를 보냄
         //신호를보내는 것을 프로그래밍에서는 Notification이라고함.
         shopAdapter.notifyDataSetChanged();
+            progressind.setVisibility(View.VISIBLE);
         }
     };
     //데이터를 다운로드 받아서 파싱하는 스레드
@@ -118,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        progressind = (ProgressBar)findViewById(R.id.progressind);
         searchtype = (Spinner)findViewById(R.id.searchtype);
         adapter  = ArrayAdapter.createFromResource(this,R.array.searchtype_array, android.R.layout.simple_spinner_dropdown_item);
         searchtype.setAdapter(adapter);
@@ -131,23 +146,108 @@ public class MainActivity extends AppCompatActivity {
         list = new Stack<Shop>();
         shopAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, list);
         listView.setAdapter(shopAdapter);
+
+        //옵션설정
+        listView.setDivider(new ColorDrawable(Color.BLUE));
+        listView.setDividerHeight(3);
+
+
+        //항목을 선택했을 때 호출되는 이벤트 핸들러 작성
+        listView.setOnItemClickListener(new ListView.OnItemClickListener(){
+
+            @Override
+            //adapterView는 이벤트가 발생한 뷰
+            //view는 선택한 항목 뷰
+            //i가 선택한 항목의 인덱스
+            //l은 선택한 항목 뷰의 id
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                //선택한 항목의 데이터
+                Shop shop = list.get(i);
+                //토스트로 shopid를 출력
+                Toast.makeText(MainActivity.this, shop.shopid + "", Toast.LENGTH_LONG).show();
+            }
+        });
+        //ListView의 항목 애니메이션 설정
+        AnimationSet set = new AnimationSet(true);
+
+        //이동하는 애니메이션
+        Animation rtl = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 1.0f, Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f);
+        rtl.setDuration(3000);
+        set.addAnimation(rtl);
+
+        Animation alpha = new AlphaAnimation(0.0f, 1.0f);
+        alpha.setDuration(1000);
+        set.addAnimation(alpha);
+
+        //각각의 애니메이션을 설정하고 대기 시간을 추가해서 생성
+        LayoutAnimationController controller = new LayoutAnimationController(set, 1.0f);
+        //listView에 에니매이션을 설정
+        listView.setLayoutAnimation(controller);
+        //listView의 Scroll 이벤트 처리
+        listView.setOnScrollListener(
+                new ListView.OnScrollListener(){
+                    //Scroll이 끝나면 호출되는 메소드
+                    @Override
+                    //첫번째 매개변수는 스크롤이 발생한 뷰
+                    //두번째는 현재 스크롤 상태로 OnScrollListener의 상수로 설정
+                    public void onScrollStateChanged(
+                            AbsListView absListView,
+                            int scrollState) {
+                        //스크롤이 끝나고 가장 하단에서 스크롤을 했다며 ㄴ데이터 업데이트
+                        if(scrollState == ListView.OnScrollListener.SCROLL_STATE_IDLE && lastItemVisibleFlag == true){
+                            pageNo = pageNo + 1;
+                            if((pageNo-1) * 3 + 1  >= cnt){
+                                Toast.makeText(MainActivity.this, "더 이상 데이터가 없습니다.", Toast.LENGTH_LONG).show();
+                            }else{
+                                new ThreadEx().start();
+                            }
+                        }
+
+                    }
+
+                    //Scroll 도중에 호출되는 메소드
+                    //두번째 매개변수가 첫번째 보이는 아이템의 인덱스
+                    //세번째 매개변수가 현재 보여지고 있는 행의 개수
+                    //네번째 매개변수가 전체 출력된 행의 개수
+                    @Override
+                    public void onScroll(AbsListView absListView,
+                                         int firstVisibleItem,
+                                         int visibleItemCount,
+                                         int totalItemCount) {
+                        //스크롤 하는 위치를 감시하다가 마지막인지 인지해서 값을 변경
+                        if(totalItemCount > 0 &&
+                                firstVisibleItem + visibleItemCount
+                                        >= totalItemCount){
+                            lastItemVisibleFlag = true;
+                        }
+
+
+                    }
+                });
+
         btnnext.setOnClickListener(new Button.OnClickListener(){
-            public void onClick(View view){
-                pageNo = pageNo +1;
+            public void onClick(View v){
+                pageNo = pageNo + 1;
                 new ThreadEx().start();
             }
         });
+
         btnsearch.setOnClickListener(new Button.OnClickListener(){
-            public void onClick(View view){
+            public void onClick(View v){
                 pageNo = 1;
-                result = "";
+               // result = "";
+                //List를 초기화해서 ListView를 초기
+                list.clear();
                 new ThreadEx().start();
             }
         });
+
     }
+
     @Override
     public void onResume(){
         super.onResume();
         new ThreadEx().start();
+
     }
 }
