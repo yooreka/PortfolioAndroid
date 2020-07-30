@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -22,18 +23,22 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity {
     //콤보 박스 역할을 하는 위젯
     private Spinner searchtype;
     private EditText value;
-    private TextView list;
+   // private TextView list;
 
 
     private Button btnsearch, btnnext;
     //Spinner에 데이터를 연결할 Adapter
     private ArrayAdapter<CharSequence> adapter;
-
+    private ListView listView;
+    private List<Shop> list;
+    private ArrayAdapter<Shop> shopAdapter;
     //페이지 번호와 페이지 당 데이터 개수를 저장할 변수
     int pageNo = 1;
     int size =3;
@@ -47,7 +52,10 @@ public class MainActivity extends AppCompatActivity {
     Handler handler = new Handler(Looper.getMainLooper()){
         @Override
         public void handleMessage(Message message){
-            list.setText(result);
+            //list.setText(reuslt);
+        //shopadapter를 이용해서 ListView에 데이터가 수정되었으니 다시 출력하고 신호를 보냄
+        //신호를보내는 것을 프로그래밍에서는 Notification이라고함.
+        shopAdapter.notifyDataSetChanged();
         }
     };
     //데이터를 다운로드 받아서 파싱하는 스레드
@@ -90,7 +98,16 @@ public class MainActivity extends AppCompatActivity {
                 JSONArray ar = object.getJSONArray("list");
                 for(int i= 0; i<ar.length(); i=i+1){
                     JSONArray temp = ar.getJSONArray(i);
-                    result = result + temp.getString(1) + "\n";
+                   // result = result + temp.getString(1) + "\n";
+                Shop shop = new Shop();
+                shop.shopid = temp.getInt(0);
+                shop.shopname = temp.getString(1);
+                shop.businesshour = temp.getString(2);
+                shop.mobile = temp.getString(3);
+                shop.roadaddress = temp.getString(4);
+                shop.address = temp.getString(5);
+
+                list.add(shop);
                 }
                 handler.sendEmptyMessage(0);
             }catch(Exception e){Log.e("오류", e.getMessage());
@@ -109,8 +126,11 @@ public class MainActivity extends AppCompatActivity {
         value = (EditText)findViewById(R.id.value);
         btnnext = (Button)findViewById(R.id.btnnext);
         btnsearch = (Button)findViewById(R.id.btnsearch);
-        list = (TextView)findViewById(R.id.list);
-
+        //list = (TextView)findViewById(R.id.list);
+        listView = (ListView)findViewById(R.id.listview);
+        list = new Stack<Shop>();
+        shopAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, list);
+        listView.setAdapter(shopAdapter);
         btnnext.setOnClickListener(new Button.OnClickListener(){
             public void onClick(View view){
                 pageNo = pageNo +1;
