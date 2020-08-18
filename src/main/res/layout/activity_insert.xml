@@ -7,6 +7,7 @@
     tools:context=".InsertActivity"
     android:orientation="vertical">
 
+
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

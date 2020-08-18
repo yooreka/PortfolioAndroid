@@ -2,6 +2,7 @@ package com.example.portfolio;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -9,6 +10,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.json.JSONObject;
@@ -24,6 +27,7 @@ import java.util.Map;
 public class ShopDetailActivity extends AppCompatActivity {
 //화면에 사용할 뷰
     TextView lblshopname, lblshopphonenum, lbladdress, lblroadaddress, lblhour;
+    Button backbtn;
 
     //텍스트 데이터를 웹에서 다운로드 받아서 출력
     //다운로드 > 파싱 > 출력
@@ -49,7 +53,11 @@ public class ShopDetailActivity extends AppCompatActivity {
         @Override
         public void run(){
             try{
-                URL url = new URL("http://192.168.0.45:8080/portfolio/detail?shopid=" + 1);
+                //호추하는 인텐트 가져오기
+                Intent intent = getIntent();
+                //shopid의 값을 정수로 가져오고 없을 때 1
+                int shopid = intent.getIntExtra("shopid", 1);
+                URL url = new URL("http://192.168.0.45:8080/portfolio/detail?shopid=" + shopid);
                         //Connetion 객체 만들기
                         HttpURLConnection con = (HttpURLConnection)url.openConnection();
                 //옵션설정
@@ -157,6 +165,13 @@ public class ShopDetailActivity extends AppCompatActivity {
         lbladdress = (TextView)findViewById(R.id.lbladdress);
         lblroadaddress = (TextView)findViewById(R.id.lblroadaddress);
         lblhour = (TextView)findViewById(R.id.lblhour);
+        backbtn = (Button)findViewById(R.id.backbtn);
+        backbtn.setOnClickListener(new Button.OnClickListener(){
+            public void onClick(View view){
+                //현재 Activity 종료
+                finish();
+            }
+        });
 
     }
 }

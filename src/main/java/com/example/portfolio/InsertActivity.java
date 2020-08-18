@@ -45,11 +45,7 @@ public class InsertActivity extends AppCompatActivity {
                         roadaddressinput.getText().toString().trim(),
                         businesshourinput.getText().toString().trim(),
                         mobileinput.getText().toString().trim()};
-                Log.e("shopname", shopnameinput.getText().toString());
-                Log.e("address", addressinput.getText().toString());
-                Log.e("roadaddress", roadaddressinput.getText().toString());
-                Log.e("mobile", mobileinput.getText().toString());
-                Log.e("businesshour", businesshourinput.getText().toString());
+
 
                 String[] dataName = {"shopname", "address", "roadaddress", "businesshour", "mobile"};
                 //파라미터 전송에 필요한 변수를 생성
@@ -59,6 +55,11 @@ public class InsertActivity extends AppCompatActivity {
                 //String boundary  ="androidinsert";
                 String boundary = UUID.randomUUID().toString();
                */
+                Log.e("shopname", shopnameinput.getText().toString());
+                Log.e("address", addressinput.getText().toString());
+                Log.e("roadaddress", roadaddressinput.getText().toString());
+                Log.e("mobile", mobileinput.getText().toString());
+                Log.e("businesshour", businesshourinput.getText().toString());
                 //업로드 옵션을 설정
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("POST");
@@ -156,8 +157,8 @@ public class InsertActivity extends AppCompatActivity {
 
         }catch(Exception e){
                 Log.e("업로드 예외", e.getMessage());
+                e.printStackTrace();
             }
-
 
         }
     }
@@ -166,6 +167,7 @@ public class InsertActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message message) {
 
+            Log.e("msg", "dd");
             boolean result = (Boolean) message.obj;
             if (result == true) {
                 Toast.makeText(InsertActivity.this, "삽입성공", Toast.LENGTH_SHORT).show();

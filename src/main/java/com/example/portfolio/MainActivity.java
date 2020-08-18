@@ -2,6 +2,7 @@ package com.example.portfolio;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -164,7 +165,13 @@ public class MainActivity extends AppCompatActivity {
                 //선택한 항목의 데이터
                 Shop shop = list.get(i);
                 //토스트로 shopid를 출력
-                Toast.makeText(MainActivity.this, shop.shopid + "", Toast.LENGTH_LONG).show();
+              //Toast.makeText(MainActivity.this, shop.shopid + "", Toast.LENGTH_LONG).show();
+                //하위 Activity 출력
+                Intent intent = new Intent(MainActivity.this, ShopDetailActivity.class);
+                //데이터 전달하기 - shopid전달
+                intent.putExtra("shopid", shop.shopid);
+                //액티비티 호출
+                startActivity(intent);
             }
         });
         //ListView의 항목 애니메이션 설정
@@ -172,11 +179,11 @@ public class MainActivity extends AppCompatActivity {
 
         //이동하는 애니메이션
         Animation rtl = new TranslateAnimation(Animation.RELATIVE_TO_SELF, 1.0f, Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f);
-        rtl.setDuration(3000);
+        rtl.setDuration(500);
         set.addAnimation(rtl);
 
         Animation alpha = new AlphaAnimation(0.0f, 1.0f);
-        alpha.setDuration(1000);
+        alpha.setDuration(500);
         set.addAnimation(alpha);
 
         //각각의 애니메이션을 설정하고 대기 시간을 추가해서 생성
@@ -247,7 +254,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
-        new ThreadEx().start();
+      //데이터가 없을 때만 데이터 가져오기
+            if(list == null || list.size() < 1){
 
+                new ThreadEx().start();
+
+            }
     }
 }
