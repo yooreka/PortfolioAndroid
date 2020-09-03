@@ -191,8 +191,7 @@ public class MainActivity extends AppCompatActivity {
         //listView에 에니매이션을 설정
         listView.setLayoutAnimation(controller);
         //listView의 Scroll 이벤트 처리
-        listView.setOnScrollListener(
-                new ListView.OnScrollListener(){
+        listView.setOnScrollListener(new ListView.OnScrollListener(){
                     //Scroll이 끝나면 호출되는 메소드
                     @Override
                     //첫번째 매개변수는 스크롤이 발생한 뷰

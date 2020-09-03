@@ -3,6 +3,7 @@ package com.example.portfolio;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -38,7 +39,7 @@ public class LoginActivity extends AppCompatActivity {
     Button btnlogin, btnlogout;
     ImageView profileImage;
     String profileUrl;
-    String email, nickname, regdate;
+    String email, nickname, logindate, userpw;
 
     ImageView imgProfile;
 
@@ -49,7 +50,7 @@ public class LoginActivity extends AppCompatActivity {
         public void run() {
             try {
                 URL url = new URL(
-                        "http://192.168.0.9:8080/portfolio/login");
+                        "http://192.168.0.45:8080/portfolio/login");
                 HttpURLConnection con =
                         (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("POST");
@@ -99,18 +100,19 @@ public class LoginActivity extends AppCompatActivity {
                 if (json != null) {
                     try {
                         JSONObject object = new JSONObject(json);
-                        Log.e("데이터", object.toString());
-                        boolean result = object.getBoolean("login");
+                       // Log.e("데이터", object.toString());
+                        boolean result = object.getBoolean("result");
                         if (result == true) {
                             profileUrl = object.getString("profile");
                             email = object.getString("email");
                             nickname = object.getString("nickname");
-                            regdate = object.getString("regdate");
+                            logindate = object.getString("logindate");
+
                         }
                         try {
                             FileOutputStream fos = openFileOutput("login.txt",
                                     Context.MODE_PRIVATE);
-                            String str = email + ":" + nickname + ":" + profileUrl + ":" + regdate;
+                            String str = email + ":" + nickname + ":" + profileUrl;
                             fos.write(str.getBytes());
                             fos.close();
                         } catch (Exception e) { e.getMessage();
@@ -137,6 +139,7 @@ public class LoginActivity extends AppCompatActivity {
                         handler.sendMessage(message);
                     } catch (Exception e) {
                         Log.e("파싱 예외", e.getMessage());
+                        e.printStackTrace();
                         Message message = new Message();
                         message.obj = "JSON 파싱 에러";
                         message.what = 0;
@@ -166,7 +169,7 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, "로그인 성공",
                                     Toast.LENGTH_SHORT).show();
                             new ImageThread().start();
-//키보드 관리 객체 가져오기
+                            //키보드 관리 객체 가져오기
                             InputMethodManager imm = (InputMethodManager) getSystemService(
                                     INPUT_METHOD_SERVICE);
                             imm.hideSoftInputFromWindow(emailinput.getWindowToken(), 0);
@@ -237,7 +240,7 @@ public class LoginActivity extends AppCompatActivity {
                     //파일 다운로드를 위한 스트림을 생성
                     InputStream is =
                             new URL(
-                                    "http://192.168.0.9:8080/portfolio/profile/" +
+                                    "http://192.168.0.45:8080/portfolio/profile/" +
                                             profileUrl).openStream();
                     //파일로 저장
                 /*
@@ -265,6 +268,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 } catch (Exception e) {
                     Log.e("이미지 다운로드 실패", e.getMessage());
+                    e.printStackTrace();
                 }
             }
         }
@@ -272,7 +276,7 @@ public class LoginActivity extends AppCompatActivity {
         Handler imageHandler = new Handler(Looper.getMainLooper()) {
             public void handleMessage(Message message) {
                 Bitmap bit = (Bitmap) message.obj;
-                imgProfile.setImageBitmap(bit);
+                profileImage.setImageBitmap(bit);
 
             }
         };
@@ -326,6 +330,11 @@ public class LoginActivity extends AppCompatActivity {
                             return;
                         }
                     }
+                    Intent intent = new Intent(LoginActivity.this, LoginResultActivity.class);
+                    intent.putExtra("email", email);
+                    intent.putExtra("userpw", userpw);
+                    startActivity(intent);
+
 
                     new ThreadEx().start();
                 }
@@ -336,6 +345,7 @@ public class LoginActivity extends AppCompatActivity {
                     Message message = new Message();
                     if (deleteFile("login.txt")) {
                         message.obj = "로그아웃에 성공했습니다.";
+
                     } else {
                         message.obj = "로그인을 한 적이 없습니다.";
                     }
@@ -343,7 +353,6 @@ public class LoginActivity extends AppCompatActivity {
                     handler.sendMessage(message);
                 }
             });
-
 
 
 
