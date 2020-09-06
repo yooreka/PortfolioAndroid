@@ -1,4 +1,4 @@
-package com.example.portfolio;
+package com.example.ktravel;
 
 public class Shop {
     public int shopid;

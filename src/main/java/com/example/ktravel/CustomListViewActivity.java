@@ -1,34 +1,34 @@
-package com.example.portfolio;
+package com.example.ktravel;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class CustomListViewActivity extends AppCompatActivity {
@@ -39,6 +39,27 @@ public class CustomListViewActivity extends AppCompatActivity {
     int cnt;
     ArrayList<Map<String, Object>>data;
     CustomAdapter adapter;
+
+    private void getHashKey(){
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (packageInfo == null)
+            Log.e("KeyHash", "KeyHash:null");
+
+        for (Signature signature : packageInfo.signatures) {
+            try {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            } catch (NoSuchAlgorithmException e) {
+                Log.e("KeyHash", "Unable to get MessageDigest. signature=" + signature, e);
+            }
+        }
+    }
 
     class ThreadEx extends Thread{
         String jsonString = null;
@@ -89,11 +110,16 @@ public class CustomListViewActivity extends AppCompatActivity {
                             String firstimage = imsi.optString("firstimage");
                             int contentid =Integer.parseInt(imsi.getString("contentid"));
                             int contenttypeid = Integer.parseInt(imsi.getString("contenttypeid"));
+                            double mapx = Double.parseDouble(imsi.getString("mapx"));
+                            double mapy = Double.parseDouble(imsi.getString("mapy"));
                             map.put("title", title);
                             map.put("addr1", addr1);
                             map.put("firstimage", firstimage);
                             map.put("contentid", contentid);
                             map.put("contenttypeid", contenttypeid);
+                            map.put("mapx", mapx);
+                            map.put("mapy", mapy);
+
                         }catch(Exception e){
                             Log.e("firstimage null", e.getMessage());
                             e.getMessage();
@@ -134,6 +160,9 @@ public class CustomListViewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_list_view);
 
+        getHashKey();
+
+
         data = new ArrayList<>();
         listView = findViewById(R.id.listView);
         adapter = new CustomAdapter(this, data);
@@ -150,6 +179,8 @@ public class CustomListViewActivity extends AppCompatActivity {
                     intent.putExtra("contentid", (Integer)map.get("contentid"));
                     intent.putExtra("firstimage", (String)map.get("firstimage"));
                     intent.putExtra("title", (String)map.get("title"));
+                    intent.putExtra("mapx", (Double)map.get("mapx"));
+                    intent.putExtra("mapy", (Double)map.get("mapy"));
                    // Log.e("이미지", (String)map.get("firstimage"));
                     startActivity(intent);
                 }catch (Exception e){

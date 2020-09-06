@@ -1,4 +1,4 @@
-package com.example.portfolio;
+package com.example.ktravel;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,21 +11,16 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.UUID;
 
 public class InsertActivity extends AppCompatActivity {
  EditText shopnameinput, addressinput, roadaddressinput, businesshourinput, mobileinput;

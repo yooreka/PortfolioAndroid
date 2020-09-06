@@ -1,4 +1,4 @@
-package com.example.portfolio;
+package com.example.ktravel;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -24,12 +24,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<netwokr-security-config>
+   <domain-config cleartextTrafficPermitted="true">
+
+       <domain includeSubdomains="true">map.daum-img.net</domain>
+   </domain-config>
+
+</netwokr-security-config>
+

@@ -1,18 +1,24 @@
-package com.example.portfolio;
+package com.example.ktravel;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.text.Html;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import net.daum.mf.map.api.MapPoint;
+import net.daum.mf.map.api.MapView;
 
 import org.json.JSONObject;
 
@@ -21,10 +27,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.security.spec.ECField;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class CustomDetailActivity extends AppCompatActivity {
@@ -32,6 +36,10 @@ public class CustomDetailActivity extends AppCompatActivity {
  ImageView detailImg;
 Intent intent;
 Bitmap bitmap;
+Button mapbtn;
+    MapView mapView;
+    String b = "";
+    String e = "";
 
     class DetailThread extends Thread {
         String jsonString = null;
@@ -75,17 +83,16 @@ Bitmap bitmap;
                     Map<String, Object> map = new HashMap<>();
                     intent = getIntent();
                     String title = intent.getStringExtra("title");
-
+                    Double mapx = intent.getDoubleExtra("mapx",0);
+                    Double mapy = intent.getDoubleExtra("mapy",0);
+                        map.put("mapx", mapx);
+                        map.put("mapy", mapy);
                     try {
                       int zipcode = Integer.parseInt(item.getString("zipcode"));
                       String overview = item.getString("overview");
-
-
-
-
-                    map.put("zipcode", zipcode);
-                    map.put("overview", overview);
-                    map.put("title", title);
+                      map.put("zipcode", zipcode);
+                      map.put("overview", overview);
+                      map.put("title", title);
                   }catch(Exception e){
                       Log.e("항목 예외", e.getMessage());
                               e.printStackTrace();
@@ -117,21 +124,28 @@ Bitmap bitmap;
           String a = "";
           String c = "";
           String d = "";
+
           try {
               for (Map map : result) {
                   String overview = (String) map.get("overview");
-                  String title = (String) map.get("title");
-                  int zipcode = (Integer) (map.get("zipcode"));
+                  String title = (String)map.get("title");
+                  int zipcode = (Integer)map.get("zipcode");
+                  double mapx = (Double)map.get("mapx");
+                  double mapy = (Double)map.get("mapy");
                   c += overview;
                   a += zipcode;
                   d += title;
+                  b += mapx;
+                  e += mapy;
               }
               textView2.setText(String.valueOf(a));
               textView4.setText(c);
               textView5.setText(d);
-          }catch (Exception e){
-              Log.e("Map 추출 오류", e.getMessage());
-              e.printStackTrace();
+
+
+          }catch (Exception e1){
+              Log.e("Map 추출 오류", e1.getMessage());
+              e1.printStackTrace();
           }
       }
     };
@@ -167,19 +181,33 @@ Bitmap bitmap;
             detailImg.setImageBitmap(bitmap);
         }
     };
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_detail);
         detailImg = findViewById(R.id.detailImg);
-        textView2 = findViewById(R.id.textView2);
-        textView3 = findViewById(R.id.textView3);
         textView4 = findViewById(R.id.textView4);
         textView5 = findViewById(R.id.textView5);
+        textView2 = findViewById(R.id.textView2);
+        mapbtn = findViewById(R.id.mapbtn);
+        mapbtn.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mapView = new MapView(CustomDetailActivity.this);
+                ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map_view);
+                mapViewContainer.addView(mapView);
+                mapView.setMapCenterPoint(MapPoint.mapPointWithGeoCoord(Double.parseDouble(e),Double.parseDouble(b)), true);
+            }
+        });
 
-     new DetailThread().start();
+      new DetailThread().start();
 
       new ImageThread1().start();
+
+
 
     }
 }

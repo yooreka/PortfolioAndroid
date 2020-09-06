@@ -1,4 +1,4 @@
-package com.example.portfolio;
+package com.example.ktravel;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,12 +16,9 @@ import android.widget.Toast;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.UUID;
 
 
