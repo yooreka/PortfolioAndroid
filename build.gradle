@@ -26,6 +26,7 @@ android {
          maven{url 'https://jitpack.io'}
      }
  }
+
 dependencies {
     implementation 'com.github.pedroSG94:AutoPermissions:1.0.3'
     implementation fileTree(dir: "libs", include: ["*.jar"])
@@ -36,5 +37,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation files('libs/libDaumMapAndroid.jar')
+    implementation 'kr.co.prnd:readmore-textview:1.0.0'
+
 
 }

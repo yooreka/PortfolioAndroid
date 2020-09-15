@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".CustomDetailActivity"
     android:orientation="vertical">
-    <LinearLayout
+
+        <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -15,6 +16,7 @@
             android:id="@+id/textView5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+
             />
     </LinearLayout>
 
@@ -29,14 +31,17 @@
         android:id="@+id/textView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:scrollbars="vertical"
        />
 
-
-    <TextView
+    <kr.co.prnd.readmore.ReadMoreTextView
         android:id="@+id/textView4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView3" />
+
+        app:readMoreColor="@color/colorPrimary"
+        app:readMoreMaxLine="3"
+        app:readMoreText="…더보기" />
 
 
     <Button
