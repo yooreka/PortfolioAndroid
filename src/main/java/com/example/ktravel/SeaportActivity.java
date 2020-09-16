@@ -1,24 +1,19 @@
 package com.example.ktravel;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,48 +22,23 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CustomListViewActivity extends AppCompatActivity {
+public class SeaportActivity extends AppCompatActivity {
     ListView listView;
     boolean lastItemVisibleFlag = false;
     int pageNo = 1;
-
-
-    ArrayList<Map<String, Object>>data;
+    ArrayList<Map<String, Object>> data;
     CustomAdapter adapter;
-
-    private void getHashKey(){
-        PackageInfo packageInfo = null;
-        try {
-            packageInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        if (packageInfo == null)
-            Log.e("KeyHash", "KeyHash:null");
-
-        for (Signature signature : packageInfo.signatures) {
-            try {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                Log.d("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-            } catch (NoSuchAlgorithmException e) {
-                Log.e("KeyHash", "Unable to get MessageDigest. signature=" + signature, e);
-            }
-        }
-    }
 
     class ThreadEx extends Thread{
         String jsonString = null;
         StringBuilder sb = new StringBuilder();
         public void run(){
             try{
-                URL url = new URL("http://api.visitkorea.or.kr/openapi/service/rest/KorService/areaBasedList?ServiceKey=bcgZx%2BNS6vjxiskUoogaZOW7Q59DvyU12YsbSBTkj4mhWb8gXSKpehLFaJaB6%2BzsS%2FazsuuXyfJuj5rPph62UA%3D%3D&contentTypeId=&areaCode=&sigunguCode=&cat1=A01&cat2=A0101&cat3=A01011200&listYN=Y&MobileOS=ETC&MobileApp=TourAPI3.0_Guide&arrange=A&numOfRows=8&pageNo="+pageNo+"&_type=json");
+                URL url = new URL("http://api.visitkorea.or.kr/openapi/service/rest/KorService/areaBasedList?ServiceKey=bcgZx%2BNS6vjxiskUoogaZOW7Q59DvyU12YsbSBTkj4mhWb8gXSKpehLFaJaB6%2BzsS%2FazsuuXyfJuj5rPph62UA%3D%3D&contentTypeId=12&areaCode=&sigunguCode=&cat1=A01&cat2=A0101&cat3=A01011400&listYN=Y&MobileOS=ETC&MobileApp=TourAPI3.0_Guide&arrange=A&numOfRows=12&pageNo=1&_type=json");
                 HttpURLConnection con =(HttpURLConnection)url.openConnection();
                 con.setUseCaches(false);
                 con.setConnectTimeout(30000);
@@ -130,7 +100,7 @@ public class CustomListViewActivity extends AppCompatActivity {
                         //list에 추가
                         data.add(map);
                     }
-                   // Log.e("이미지 데이터", data.toString());
+                    // Log.e("이미지 데이터", data.toString());
 
                 }else {
                     System.out.println("다운로드 받은 문자열이 없음");
@@ -151,7 +121,7 @@ public class CustomListViewActivity extends AppCompatActivity {
     Handler handler = new Handler(Looper.getMainLooper()){
         public void handleMessage(Message message){
             data = (ArrayList<Map<String, Object>>)message.obj;
-           // Log.e("데이터", data.toString());
+            // Log.e("데이터", data.toString());
             adapter.notifyDataSetChanged();
 
         }
@@ -161,7 +131,6 @@ public class CustomListViewActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_list_view);
-        getHashKey();
 
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.abs_layout);
@@ -170,7 +139,6 @@ public class CustomListViewActivity extends AppCompatActivity {
         listView = findViewById(R.id.listView);
         adapter = new CustomAdapter(this, data);
         listView.setAdapter(adapter);
-
         listView.setOnItemClickListener(new ListView.OnItemClickListener(){
 
             @Override
@@ -178,13 +146,13 @@ public class CustomListViewActivity extends AppCompatActivity {
                 try {
                     Map<String, Object> map = data.get(i);
                     //Log.e("데이터2", map.toString() );
-                    Intent intent = new Intent(CustomListViewActivity.this, CustomDetailActivity.class);
+                    Intent intent = new Intent(SeaportActivity.this, SeaportDetailActivity.class);
                     intent.putExtra("contentid", (Integer)map.get("contentid"));
                     intent.putExtra("firstimage", (String)map.get("firstimage"));
                     intent.putExtra("title", (String)map.get("title"));
                     intent.putExtra("mapx", (Double)map.get("mapx"));
                     intent.putExtra("mapy", (Double)map.get("mapy"));
-                   // Log.e("이미지", (String)map.get("firstimage"));
+                     //Log.e("이미지", (String)map.get("firstimage"));
                     startActivity(intent);
                 }catch (Exception e){
                     Log.e("데이터 전송 실패", e.getMessage());
@@ -200,10 +168,10 @@ public class CustomListViewActivity extends AppCompatActivity {
                 if(scrollstate==ListView.OnScrollListener.SCROLL_STATE_IDLE && lastItemVisibleFlag == true) {
                     pageNo = pageNo + 1;
                     new ThreadEx().start();
-                }else if(data.size()==320){
-                        Toast.makeText(CustomListViewActivity.this, "더 이상 데이터가 없습니다.", Toast.LENGTH_LONG).show();
-                    }
+                }else if(data.size()==93){
+                    Toast.makeText(SeaportActivity.this, "더 이상 데이터가 없습니다.", Toast.LENGTH_LONG).show();
                 }
+            }
 
 
 
@@ -230,3 +198,4 @@ public class CustomListViewActivity extends AppCompatActivity {
     }
 
 }
+

@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
@@ -33,7 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TempleDetailActivity extends AppCompatActivity {
+public class SeaportDetailActivity extends AppCompatActivity {
     TextView textView2,textView4, mytext;
     ImageView detailImg;
     Intent intent;
@@ -159,11 +158,11 @@ public class TempleDetailActivity extends AppCompatActivity {
                     b += mapx;
                     e += mapy;
                 }
+                mytext.setText(d);
                 textView2.setText("우편번호:" + String.valueOf(a));
                 textView4.setMovementMethod(new ScrollingMovementMethod());
-                mytext.setText(d);
 
-                mapView = new MapView(TempleDetailActivity.this);
+                mapView = new MapView(SeaportDetailActivity.this);
                 ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map_view);
                 mapView.setMapCenterPoint(MapPoint.mapPointWithGeoCoord(Double.parseDouble(e), Double.parseDouble(b)), true);
                 mapViewContainer.addView(mapView);
@@ -218,9 +217,9 @@ public class TempleDetailActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.abs_layout);
 
+        mytext = findViewById(R.id.mytext);
         detailImg = findViewById(R.id.detailImg);
         textView4 = findViewById(R.id.textView4);
-        mytext = findViewById(R.id.mytext);
         textView2 = findViewById(R.id.textView2);
         mapbtn = findViewById(R.id.mapbtn);
         mapbtn.setOnClickListener(new Button.OnClickListener() {

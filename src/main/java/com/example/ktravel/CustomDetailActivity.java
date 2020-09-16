@@ -1,5 +1,6 @@
 package com.example.ktravel;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -10,12 +11,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import net.daum.mf.map.api.MapPoint;
 import net.daum.mf.map.api.MapView;
@@ -32,14 +35,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CustomDetailActivity extends AppCompatActivity {
- TextView textView2,textView4, textView5 ;
- ImageView detailImg;
- Intent intent;
- Bitmap bitmap;
- Button mapbtn;
-    MapView mapView;
-    String b = "";
-    String e = "";
+  TextView textView2,textView4, mytext;
+  ImageView detailImg;
+  Intent intent;
+  Bitmap bitmap;
+  Button mapbtn;
+  MapView mapView;
+  String b = "";
+  String e = "";
+
+  boolean flag = false;
 
     class DetailThread extends Thread {
         String jsonString = null;
@@ -128,23 +133,40 @@ public class CustomDetailActivity extends AppCompatActivity {
           try {
               for (Map map : result) {
                   String overview = (String) map.get("overview");
+                  if(overview.contains("<br \\/>")) {
+                      String[] spt = overview.split("<br \\/>");
+                      for (int i = 0; i < spt.length; i++) {
+                          c += spt[i];
+                          textView4.setText("설명:" + c.substring(0,c.length()-4));
+                      }
+                  }else if(overview.contains("<br>")){
+                      c += overview;
+                      textView4.setText("설명:" + c.substring(0,c.length()-4));
+                  }else{
+                      c += overview;
+                      textView4.setText("설명:" + c);
+                  }
                   String title = (String)map.get("title");
                   int zipcode = (Integer)map.get("zipcode");
                   double mapx = (Double)map.get("mapx");
                   double mapy = (Double)map.get("mapy");
-                  String[] spt = overview.split("<br \\/>");
-                  for(int i=0; i<spt.length; i++){
-                      c += spt[i];
-                  }
+
 
                   a += zipcode;
                   d += title;
                   b += mapx;
                   e += mapy;
               }
-              textView2.setText("우편번호" + String.valueOf(a));
-              textView4.setText("설명:" + c.substring(0,c.length()-4));
-              textView5.setText(d);
+              textView2.setText("우편번호:" + String.valueOf(a));
+              textView4.setMovementMethod(new ScrollingMovementMethod());
+              mytext.setText(d);
+
+              mapView = new MapView(CustomDetailActivity.this);
+              ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map_view);
+              mapView.setMapCenterPoint(MapPoint.mapPointWithGeoCoord(Double.parseDouble(e), Double.parseDouble(b)), true);
+              mapViewContainer.addView(mapView);
+              mapView.setVisibility(View.INVISIBLE);
+
 
 
           }catch (Exception e1){
@@ -158,12 +180,8 @@ public class CustomDetailActivity extends AppCompatActivity {
         public void run(){
             intent = getIntent();
             String firstimage = intent.getStringExtra("firstimage");
-
-            if(firstimage==null){
-                detailImg.setImageResource(R.drawable.no_detail_img);
-            }
-            else if(firstimage!=null){
-                try {
+            if(firstimage!=null){
+                try{
                     URL url = new URL(firstimage);
                     InputStream is = url.openStream();
                     bitmap = BitmapFactory.decodeStream(is);
@@ -171,12 +189,14 @@ public class CustomDetailActivity extends AppCompatActivity {
                     Message message = new Message();
                     message.obj = bitmap;
                     imgHandler.sendMessage(message);
-                } catch (Exception e) {
-                    System.out.println("이미지 다운 실패" + e.getMessage());
+                }catch (Exception e) {
+                    Log.e("이미지 다운 실패", e.getMessage());
                     e.printStackTrace();
                 }
-            }
 
+            }else{
+                detailImg.setImageResource(R.drawable.no_detail_img);
+            }
         }
     }
     Handler imgHandler = new Handler(Looper.getMainLooper()){
@@ -192,25 +212,33 @@ public class CustomDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_detail);
+
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.abs_layout);
+
         detailImg = findViewById(R.id.detailImg);
         textView4 = findViewById(R.id.textView4);
-        textView5 = findViewById(R.id.textView5);
+        mytext = findViewById(R.id.mytext);
         textView2 = findViewById(R.id.textView2);
         mapbtn = findViewById(R.id.mapbtn);
         mapbtn.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mapView = new MapView(CustomDetailActivity.this);
-                ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map_view);
-                mapViewContainer.addView(mapView);
-                mapView.setMapCenterPoint(MapPoint.mapPointWithGeoCoord(Double.parseDouble(e),Double.parseDouble(b)), true);
+                if(flag == false) {
+                    mapView.setVisibility(View.VISIBLE);
+                    mapbtn.setText("숨기기");
+                }else{
+                    mapView.setVisibility(View.INVISIBLE);
+                    mapbtn.setText("지도");
+                }
+                flag = !flag;
+
             }
         });
 
-      new DetailThread().start();
+        new CustomDetailActivity.DetailThread().start();
 
-      new ImageThread1().start();
-
+        new CustomDetailActivity.ImageThread1().start();
 
 
     }

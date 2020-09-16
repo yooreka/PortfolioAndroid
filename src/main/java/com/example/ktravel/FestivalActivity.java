@@ -1,5 +1,6 @@
 package com.example.ktravel;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -131,6 +132,10 @@ public class FestivalActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_list_view);
+
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.abs_layout);
+
         data = new ArrayList<>();
         listView = findViewById(R.id.listView);
         adapter = new CustomAdapter(this, data);
@@ -165,7 +170,7 @@ public class FestivalActivity extends AppCompatActivity {
                 if(scrollstate==ListView.OnScrollListener.SCROLL_STATE_IDLE && lastItemVisibleFlag == true) {
                     pageNo = pageNo + 1;
                     new ThreadEx().start();
-                }else if(data.size()>996){
+                }else if(data.size()==996){
                     Toast.makeText(FestivalActivity.this, "더 이상 데이터가 없습니다.", Toast.LENGTH_LONG).show();
                 }
             }

@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONArray;
@@ -130,6 +131,10 @@ public class TemaParkActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_list_view);
+
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.abs_layout);
+
         data = new ArrayList<>();
         listView = findViewById(R.id.listView);
         adapter = new CustomAdapter(this, data);
@@ -164,7 +169,7 @@ public class TemaParkActivity extends AppCompatActivity {
                 if(scrollstate==ListView.OnScrollListener.SCROLL_STATE_IDLE && lastItemVisibleFlag == true) {
                     pageNo = pageNo + 1;
                     new ThreadEx().start();
-                }else if(data.size()>156){
+                }else if(data.size()==156){
                     Toast.makeText(TemaParkActivity.this, "더 이상 데이터가 없습니다.", Toast.LENGTH_LONG).show();
                 }
             }

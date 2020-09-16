@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
@@ -33,7 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TempleDetailActivity extends AppCompatActivity {
+public class MarketDetailActivity extends AppCompatActivity {
     TextView textView2,textView4, mytext;
     ImageView detailImg;
     Intent intent;
@@ -52,7 +51,7 @@ public class TempleDetailActivity extends AppCompatActivity {
             try {
                 intent = getIntent();
                 int contentid = intent.getIntExtra("contentid", 1);
-                URL url = new URL("http://api.visitkorea.or.kr/openapi/service/rest/KorService/detailCommon?ServiceKey=bcgZx%2BNS6vjxiskUoogaZOW7Q59DvyU12YsbSBTkj4mhWb8gXSKpehLFaJaB6%2BzsS%2FazsuuXyfJuj5rPph62UA%3D%3D&contentTypeId=12&contentId="+contentid+"&MobileOS=ETC&MobileApp=TourAPI3.0_Guide&defaultYN=Y&firstImageYN=Y&areacodeYN=Y&catcodeYN=Y&addrinfoYN=Y&mapinfoYN=Y&overviewYN=Y&transGuideYN=Y&_type=json");
+                URL url = new URL("http://api.visitkorea.or.kr/openapi/service/rest/KorService/detailCommon?ServiceKey=bcgZx%2BNS6vjxiskUoogaZOW7Q59DvyU12YsbSBTkj4mhWb8gXSKpehLFaJaB6%2BzsS%2FazsuuXyfJuj5rPph62UA%3D%3D&contentTypeId=38&contentId="+contentid+"&MobileOS=ETC&MobileApp=TourAPI3.0_Guide&defaultYN=Y&firstImageYN=Y&areacodeYN=Y&catcodeYN=Y&addrinfoYN=Y&mapinfoYN=Y&overviewYN=Y&transGuideYN=Y&_type=json");
                 HttpURLConnection con = (HttpURLConnection)url.openConnection();
                 con.setUseCaches(false);
                 con.setConnectTimeout(20000);
@@ -163,7 +162,7 @@ public class TempleDetailActivity extends AppCompatActivity {
                 textView4.setMovementMethod(new ScrollingMovementMethod());
                 mytext.setText(d);
 
-                mapView = new MapView(TempleDetailActivity.this);
+                mapView = new MapView(MarketDetailActivity.this);
                 ViewGroup mapViewContainer = (ViewGroup) findViewById(R.id.map_view);
                 mapView.setMapCenterPoint(MapPoint.mapPointWithGeoCoord(Double.parseDouble(e), Double.parseDouble(b)), true);
                 mapViewContainer.addView(mapView);
