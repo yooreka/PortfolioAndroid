@@ -112,7 +112,8 @@ public class LoginActivity extends AppCompatActivity {
                             String str = email + ":" + nickname + ":" + profileUrl;
                             fos.write(str.getBytes());
                             fos.close();
-                        } catch (Exception e) { e.getMessage();
+                        } catch (Exception e) {
+                        e.getMessage();
                         e.printStackTrace();
                         }
                /* Map<String, Object> map = new HashMap<>();
@@ -173,6 +174,11 @@ public class LoginActivity extends AppCompatActivity {
                             imm.hideSoftInputFromWindow(pwInput.getWindowToken(), 0);
                             emailinput.setText("");
                             pwInput.setText("");
+                            Intent intent = new Intent(LoginActivity.this, LoginResultActivity.class);
+                            intent.putExtra("email", email);
+                            intent.putExtra("userpw", userpw);
+                            startActivity(intent);
+
                         } else {
                             Toast.makeText(LoginActivity.this, "로그인 실패",
                                     Toast.LENGTH_SHORT).show();
@@ -327,10 +333,6 @@ public class LoginActivity extends AppCompatActivity {
                             return;
                         }
                     }
-                    Intent intent = new Intent(LoginActivity.this, LoginResultActivity.class);
-                    intent.putExtra("email", email);
-                    intent.putExtra("userpw", userpw);
-                    startActivity(intent);
 
 
                     new ThreadEx().start();
